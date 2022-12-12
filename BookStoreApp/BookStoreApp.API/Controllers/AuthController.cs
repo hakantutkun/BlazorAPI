@@ -39,6 +39,9 @@ namespace BookStoreApp.API.Controllers
             try
             {
                 var user = _mapper.Map<ApiUser>(userDto);
+
+                user.UserName = userDto.Email;
+
                 var result = await _userManager.CreateAsync(user, userDto.Password);
 
                 if (result.Succeeded == false)
