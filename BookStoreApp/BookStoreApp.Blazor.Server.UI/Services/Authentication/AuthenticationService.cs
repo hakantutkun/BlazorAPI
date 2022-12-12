@@ -26,9 +26,14 @@ namespace BookStoreApp.Blazor.Server.UI.Services.Authentication
             await _localStorage.SetItemAsync("accessToken", response.Token);
 
             // Change auth state of app
-            ((ApiAuthenticationStateProvider)_authenticationStateProvider).LoggedIn();
+            await ((ApiAuthenticationStateProvider)_authenticationStateProvider).LoggedIn();
 
             return true;
+        }
+
+        public async Task Logout()
+        {
+            await ((ApiAuthenticationStateProvider)_authenticationStateProvider).LoggedOut();
         }
     }
 }
