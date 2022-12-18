@@ -24,6 +24,10 @@ namespace BookStoreApp.Blazor.Server.UI.Services.Base
             {
                 return new Response<Guid>() { Message = "The requested item could not be found.", Success = false };
             }
+            if(apiException.StatusCode == 201 && apiException.StatusCode <= 299)
+            {
+                return new Response<Guid>() { Message = "Opreation reported succeess.", Success = true };
+            }
 
             return new Response<Guid>() { Message = "Something went wrong, plese try again.", Success = false };
         }
