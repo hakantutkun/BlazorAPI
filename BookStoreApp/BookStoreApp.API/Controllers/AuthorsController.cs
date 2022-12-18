@@ -76,14 +76,14 @@ namespace BookStoreApp.API.Controllers
             }
 
 
-            var author = _context.Authors.FindAsync(id);
+            var author = await _context.Authors.FindAsync(id);
 
             if (author == null)
             {
                 return NotFound();
             }
 
-            await _mapper.Map(authorDto, author);
+            _mapper.Map(authorDto, author);
 
             _context.Entry(author).State = EntityState.Modified;
 

@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using BookStoreApp.Blazor.Server.UI.Configurations;
 using BookStoreApp.Blazor.Server.UI.Providers;
 using BookStoreApp.Blazor.Server.UI.Services;
 using BookStoreApp.Blazor.Server.UI.Services.Authentication;
@@ -17,6 +18,9 @@ builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<ApiAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(p =>
                     p.GetRequiredService<ApiAuthenticationStateProvider>());
+
+builder.Services.AddAutoMapper(typeof(MapperConfig));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
