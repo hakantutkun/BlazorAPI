@@ -1,0 +1,90 @@
+﻿@page "/books/create"
+@inject IBookService bookService;
+@inject IAuthorService authorService;
+@inject NavigationManager navManager;
+@attribute [Authorize(Roles = Roles.Administrator)]
+
+<h3>Create Book</h3>
+
+<EditForm Model="Book" OnValidSubmit="HandleBookCreate">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+    <div class="form-group">
+        <label for="title">Book Title</label>
+        <InputText class="form-control" @bind-Value="Book.Title" id="title" />
+    </div>
+    <div class="form-group">
+        <label for="isbn">ISBN</label>
+        <InputText class="form-control" @bind-Value="Book.Isbn" id="isbn" />
+    </div>
+    <div class="form-group">
+        <label for="price">Price</label>
+        <InputNumber class="form-control" @bind-Value="Book.Price" id="price" />
+    </div>
+    <div class="form-group">
+        <label for="summary">Summary</label>
+        <InputTextArea class="form-control" @bind-Value="Book.Summary" id="summary" />
+    </div>
+
+    <div class="form-group">
+        <label for="author">Author</label>
+        <InputSelect class="form-control" @bind-Value="Book.AuthorId" id="author"> 
+            <option value="">--Select Author--</option>
+            @foreach(var author in Authors)
+            {
+                <option value="@author.Id">@author.FirstName @author.LastName</option>
+            }
+        </InputSelect>
+    </div>
+    <br/>
+    <div class="form-group">
+        <label>Book Cover Photo</label>
+        <div>
+            <InputFile OnChange="HandleFileSelection"/>
+            <img src="@img" width="200" height="200" class="img-thumbnail"/>
+            <p class="text-danger">@UploadFileWarning</p>
+        </div>
+    </div>
+
+</EditForm>
+
+@code {
+    private BookCreateDto Book = new();
+    private List<AuthorReadOnlyDto> Authors = new();
+    private string UploadFileWarning = string.Empty;
+    private string img = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await authorService.GetAuthors();
+        Authors = response.Data;
+    }
+
+    private async Task HandleBookCreate()
+    {
+
+    }
+
+    private async Task HandleFileSelection(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if(file != null)
+        {
+            var ext = System.IO.Path.GetExtension(file.Name);
+            if (ext.ToLower().Contains("jpg") || ext.ToLower().Contains("png") || ext.ToLower().Contains("jpeg"))
+            {
+                var byteArray = new byte[file.Size];
+                await file.OpenReadStream().ReadAsync(byteArray);
+                string imageType = file.ContentType;
+                string base64String = Convert.ToBase64String(byteArray);
+
+                Book.Image = base64String;
+                img = $"data:{imageType}; base64, {base64String}";
+            }
+            else
+            {
+                UploadFileWarning = "Please select a valid image file(*.jpg | *.png) ";
+            }
+        }
+    }
+}
